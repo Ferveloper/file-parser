@@ -4,15 +4,40 @@
 require('dotenv').config()
 
 const fs = require('fs');
+const path = require('path');
 const chokidar = require('chokidar');
-require('console-stamp')(console, {pattern: 'dd/mm/yy HH:mm:ss'})
+const axios = require('axios');
+
+require('console-stamp')(console, {pattern: 'dd/mm/yy HH:mm:ss'});
+
+if (!process.env.UPLOADS_PATH) {
+  console.error('Variable de entorno UPLOADS_PATH no especificada');
+  process.exit(1);
+};
+
+if (!process.env.ORION_IP) {
+  console.error('Variable de entorno ORION_IP no especificada');
+  process.exit(1);
+};
+
+if (!process.env.ORION_PORT) {
+  console.error('Variable de entorno ORION_PORT no especificada');
+  process.exit(1);
+};
+
+const {
+  UPLOADS_PATH,
+  ORION_IP,
+  ORION_PORT
+} = process.env;
 
 // One-liner for current directory
-const watcher = chokidar.watch('./uploads')
+const watcher = chokidar.watch(UPLOADS_PATH);
 
-watcher.on('all', (event, path) => {
-  console.log('Event:', event, 'Path:', path);
-});
+console.log('Escuchando cambios en', path.resolve(UPLOADS_PATH));
+// watcher.on('all', (event, path) => {
+//   console.log('Event:', event, 'Path:', path);
+// });
 
 watcher.on('change', path => {
   console.log ('File changed, Path:', path);
@@ -23,11 +48,8 @@ watcher.on('change', path => {
   let headerLine, lastLine
 
   for (let line of lines) {
-
     line = line.trim();
-
     if (line === '') continue;
-
     if (!lastLine) {
       lastLine = line;
       continue;
@@ -38,16 +60,14 @@ watcher.on('change', path => {
     }
   }
 
-  // let lastLine = lines.slice(-1)[0];
-  // while (lastLine.trim() === '') {
-  //   lastLine = lines.slice(-1)[0];
-  // } 
-  // console.log('header', headerLine);
-  // console.log('data', lastLine);
-
   const csvType = headerLine.split(';')[0];
   let header = headerLine.split(';').slice(1,-1);
-  console.log("TCL: header", header)
+  let data = lastLine.split(';').slice(1,-1);
+
+  if (header.length !== data.length) {
+    console.error(`Formato de datos inconsistente -> Claves: ${header.length}, Valores: ${data.length}`);
+    return;
+  }
   
   let re;
 
@@ -55,18 +75,45 @@ watcher.on('change', path => {
   if (csvType === "[ ]") re = /^\w+\s/ig
 
   header = header.map(item => {
-    console.log(item)
-    console.log(re)
+    // console.log(item)
+    // console.log(re)
     return item.match(re)[0].replace(/(\[|\]|")/ig, '').trim();
   });
   console.log("TCL: header", header)
-  let data = lastLine.split(';').slice(1,-1);
   console.log("TCL: data", data)
 
-  let body = {}
+  let attributes = {};
 
-  header.forEach((key, i) => body[key] = data[i])
+  header.forEach((key, i) => {
+    if (key === 'Trigger') {
+      attributes[key] = { type: 'String', value: data[i] };
+    } else {
+      attributes[key] = { type: 'Float', value: parseFloat(data[i].replace(/,/, '.')) }
+    }
+    return attributes[key];
+  });
 
-  console.log(body)
+  const entityID = path.split(/\\|\//).slice(-2)[0];
+
+  console.log(`${entityID}, ${Object.keys(attributes).length} atributos`);
+  console.log('Atributos:', attributes)
+
+  // const symbols =["C3u", "CPx", "PHu", "H1x", "H2x", "H3x", "H4x", "H5x", "H6x", "OelTx", "PNs", "ZSch1", "PVs", "SFs", "SSx", "SKs", "ZDx", "ZFx", "ZSx", "ZUs"];
+
+  // for (let key in attributes) {
+  //   if (!symbols.includes(key)) delete attributes[key];
+  // }
+
+  // console.log('Después:', attributes, Object.keys(attributes).length);
+
+  axios.post(`http://${ORION_IP}:${ORION_PORT}/v2/entities/${entityID}/attrs`, {
+        ...attributes
+      })
+        .then((res) => {
+          console.log(`[ORION] Petición recibida para ${entityID}, status: ${res.status}`);
+        })
+        .catch((error) => {
+          console.error(`[ORION] Error de conexión: ${error.code}`)
+        })
 
 })
