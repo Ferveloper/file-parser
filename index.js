@@ -40,7 +40,7 @@ console.log('Escuchando cambios en', path.resolve(UPLOADS_PATH));
 // });
 
 watcher.on('change', path => {
-  console.log ('File changed, Path:', path);
+  console.log ('Cambio detectado en archivo, Ruta:', path);
 
   const file = fs.readFileSync(path, 'utf-8');
   const lines = file.trim().split('\n').reverse();
@@ -79,8 +79,8 @@ watcher.on('change', path => {
     // console.log(re)
     return item.match(re)[0].replace(/(\[|\]|")/ig, '').trim();
   });
-  console.log("TCL: header", header)
-  console.log("TCL: data", data)
+  // console.log("TCL: header", header)
+  // console.log("TCL: data", data)
 
   let attributes = {};
 
@@ -95,8 +95,8 @@ watcher.on('change', path => {
 
   const entityID = path.split(/\\|\//).slice(-2)[0];
 
-  console.log(`${entityID}, ${Object.keys(attributes).length} atributos`);
-  console.log('Atributos:', attributes)
+  console.log(`Enviando a Orion datos de ${entityID}, ${Object.keys(attributes).length} atributos`);
+  console.log(`Atributos de ${entityID}:`, attributes);
 
   // const symbols =["C3u", "CPx", "PHu", "H1x", "H2x", "H3x", "H4x", "H5x", "H6x", "OelTx", "PNs", "ZSch1", "PVs", "SFs", "SSx", "SKs", "ZDx", "ZFx", "ZSx", "ZUs"];
 
@@ -113,7 +113,7 @@ watcher.on('change', path => {
           console.log(`[ORION] Petición recibida para ${entityID}, status: ${res.status}`);
         })
         .catch((error) => {
-          console.error(`[ORION] Error de conexión: ${error.code}`)
+          console.error(`[ORION] Error de conexión: ${error.code}`);
         })
 
 })
