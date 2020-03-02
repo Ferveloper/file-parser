@@ -12,17 +12,17 @@ require('console-stamp')(console, {pattern: 'dd/mm/yy HH:mm:ss'});
 
 if (!process.env.UPLOADS_PATH) {
   console.error('Variable de entorno UPLOADS_PATH no especificada');
-  process.exit(1);
+  process.exit(0);
 };
 
 if (!process.env.ORION_IP) {
   console.error('Variable de entorno ORION_IP no especificada');
-  process.exit(1);
+  process.exit(0);
 };
 
 if (!process.env.ORION_PORT) {
   console.error('Variable de entorno ORION_PORT no especificada');
-  process.exit(1);
+  process.exit(0);
 };
 
 const {
