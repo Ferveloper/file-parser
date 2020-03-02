@@ -7,7 +7,7 @@ services:
     restart: always
     volumes:
       # - C:\\uploads:/home/node/app/uploads #Windows
-      - /home/fmerino/uploads:/home/node/app/uploads #Linux
+      - /home/fmerino/file-parser/uploads:/home/node/app/uploads #Linux
     # ports:
     #   - "3000"
     # expose:
