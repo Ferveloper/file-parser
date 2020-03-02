@@ -6,7 +6,7 @@ services:
     container_name: file-parser
     restart: always
     volumes:
-      - C:\\uploads:/home/node/app/uploads #Windows
+      # - C:\\uploads:/home/node/app/uploads #Windows
       - /home/fmerino/uploads:/home/node/app/uploads #Linux
     # ports:
     #   - "3000"
