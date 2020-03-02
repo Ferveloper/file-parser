@@ -22,5 +22,6 @@ EXPOSE 3000
 
 CMD [ "node", "index.js" ]
 
-# docker build -t ferbosonit/file-parser .
-# docker run --name file-parser -v C:\\uploads:/home/node/app/uploads ferbosonit/file-parser
+# docker build -t file-parser .
+# Windows: docker run --name file-parser -v C:\\uploads:/home/node/app/uploads file-parser
+# Linux: docker run --name file-parser -v /home/fmerino/uploads:/home/node/app/uploads file-parser
