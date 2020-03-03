@@ -45,7 +45,7 @@ watcher.on('change', path => {
   const file = fs.readFileSync(path, 'utf-8');
   const lines = file.trim().split('\n').reverse();
 
-  let headerLine, lastLine
+  let headerLine, lastLine;
 
   for (let line of lines) {
     line = line.trim();
@@ -58,7 +58,12 @@ watcher.on('change', path => {
       headerLine = line;
       continue;
     }
-  }
+  };
+
+  if (!headerLine || !lastLine || !headerLine.includes(';') || !lastLine.includes(';')) {
+    console.log('Formato de datos no reconocido. Lectura de datos abortada')
+    return;
+  };
 
   const csvType = headerLine.split(';')[0];
   let header = headerLine.split(';').slice(1,-1);
