@@ -8,7 +8,7 @@ const path = require('path');
 const chokidar = require('chokidar');
 const axios = require('axios');
 
-require('console-stamp')(console, {pattern: 'dd/mm/yy HH:mm:ss'});
+require('console-stamp')(console, {pattern: 'dd/mm/yy HH:MM:ss'});
 
 if (!process.env.UPLOADS_PATH) {
   console.error('Variable de entorno UPLOADS_PATH no especificada');
