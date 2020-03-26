@@ -113,12 +113,18 @@ watcher.on('change', path => {
 
   axios.post(`http://${ORION_IP}:${ORION_PORT}/v2/entities/${entityID}/attrs`, {
         ...attributes
+      }, {
+        headers: {
+          'fiware-service': 'openiot',
+          'fiware-servicepath': '/',
+          'Content-Type': 'application/json'
+        }
       })
         .then((res) => {
           console.log(`[ORION] Petición recibida para ${entityID}, status: ${res.status}`);
         })
         .catch((error) => {
-          console.error(`[ORION] Error de conexión: ${error.code}`);
+          console.error(`[ORION] Error de conexión: ${error}`);
         })
 
 })
