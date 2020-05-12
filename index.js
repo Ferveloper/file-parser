@@ -91,7 +91,9 @@ watcher.on('change', path => {
 
   header.forEach((key, i) => {
     if (key === 'Trigger') {
-      attributes[key] = { type: 'String', value: data[i] };
+      // attributes[key] = { type: 'String', value: data[i] };
+      // Skip Trigger attribute
+      return;
     } else {
       attributes[key] = { type: 'Float', value: parseFloat(data[i].replace(/,/, '.')) }
     }
